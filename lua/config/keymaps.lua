@@ -1,3 +1,17 @@
 -- Keymaps are automatically loaded on the VeryLazy event
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
+vim.keymap.set("i", "jk", "<Esc>", { desc = "Exit insert mode with jk" })
+
+-- Jump out of brackets/quotes — moves cursor past the next closing character
+local function jump_out()
+  local col = vim.api.nvim_win_get_cursor(0)[2] -- 0-based column
+  local next = vim.api.nvim_get_current_line():sub(col + 1, col + 1)
+  if next ~= "" and next:match("[%]})>\"'`]") then
+    return "<Right>"
+  end
+  return ""
+end
+
+vim.keymap.set("i", "<C-]>", jump_out, { expr = true, desc = "Jump out of bracket/quote" })
+vim.keymap.set("i", "<C-j>", jump_out, { expr = true, desc = "Jump out of bracket/quote" })
