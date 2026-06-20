@@ -6,6 +6,7 @@ return {
       "rust-analyzer",
       "clangd",
       "basedpyright",
+      "json-lsp",
     },
   },
 }
