@@ -72,6 +72,7 @@ Lessons are stored as individual `.md` files in the `lessons/` subdirectory (nex
 - [expr-keymap-empty-return](lessons/expr-keymap-empty-return.md) — `expr = true` 返回空字符串时消费按键且丢失默认行为，非透传
 - [jump-out-off-by-one](lessons/jump-out-off-by-one.md) — `nvim_win_get_cursor` 0-based 列号转 Lua 1-based 索引时 `+1` 而非 `+2`
 - [app-bundle-path-lsp](lessons/app-bundle-path-lsp.md) — 从 `.app` 启动 Neovim 时 PATH 缺少 Homebrew 路径，导致 LSP 找不到 `go` 等工具
+- [json-format-jq-conform](lessons/json-format-jq-conform.md) — jsonls LSP 不保证注册格式化能力，改用 jq + conform.nvim 更可靠
 
 ###其他值得记住但不需要单文件记录的知识
 

@@ -15,3 +15,13 @@ end
 
 vim.keymap.set("i", "<C-]>", jump_out, { expr = true, desc = "Jump out of bracket/quote" })
 vim.keymap.set("i", "<C-j>", jump_out, { expr = true, desc = "Jump out of bracket/quote" })
+
+-- Toggle line wrap (global)
+vim.keymap.set("n", "<leader>uw", function()
+  vim.wo.wrap = not vim.wo.wrap
+  if vim.wo.wrap then
+    vim.notify("Wrap: on", vim.log.levels.INFO, { title = "Line Wrap" })
+  else
+    vim.notify("Wrap: off", vim.log.levels.INFO, { title = "Line Wrap" })
+  end
+end, { desc = "Toggle wrap" })
