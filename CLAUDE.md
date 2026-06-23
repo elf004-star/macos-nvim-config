@@ -20,6 +20,7 @@ This is a [LazyVim](https://github.com/LazyVim/LazyVim) starter-based Neovim con
 | `lazyvim.json` | LazyVim install metadata (extras, version) |
 | `stylua.toml` | Lua formatting config (spaces, 2 indent, 120 column width) |
 | `.neoconf.json` | neoconf.nvim settings for Lua LSP |
+| `test.c` | Scratch file for testing C LSP/formatting |
 
 ### How plugins work
 
@@ -47,6 +48,25 @@ The `lua/plugins/example.lua` file shows common override patterns (disabled by `
 - grug-far.nvim — search & replace across files
 - persistence.nvim — session management
 - todo-comments.nvim — TODO/FIXME highlighting
+
+### Language support (extras imported in `lua/config/lazy.lua`)
+
+| Language | LSP Server | Formatter | Enabled via |
+|----------|-----------|-----------|-------------|
+| Python | `basedpyright` (custom config in `lua/plugins/python.lua`) | (conform default) | `lazyvim.plugins.extras.lang.python` |
+| Rust | `rust-analyzer` | `rustfmt` (explicit in `lua/plugins/rust.lua`) | `lazyvim.plugins.extras.lang.rust` |
+| Go | `gopls` | (conform default) | `lazyvim.plugins.extras.lang.go` |
+| C/C++ | `clangd` | `clang-format` via `~/.clang-format` (docs in `lua/plugins/clangd.lua`) | `lazyvim.plugins.extras.lang.clangd` |
+| JSON | `jsonls` (with schema validation in `lua/plugins/json.lua`) | `jq` (via conform in `lua/plugins/json.lua`) | — |
+
+LSP servers listed above are auto-installed via `mason.nvim` (see `lua/plugins/mason.lua` for the `ensure_installed` list).
+
+### Notable customizations
+
+- **basedpyright instead of pyright** — `lua/plugins/python.lua` enables `basedpyright` (more complete type checking) and disables the stock pyright via the `setup` hook.
+- **JSON schemas** — `lua/plugins/json.lua` registers `package.json`, `tsconfig.json`, and `lazy-lock.json` schemas for validation.
+- **macOS Homebrew PATH fix** — `lua/config/options.lua` prepends `/opt/homebrew/bin` to PATH so LSP tools (gopls, etc.) work when Neovim is launched from a `.app` bundle (which doesn't inherit `~/.zshrc`).
+- **C/C++ formatting** — clangd delegates to `clang-format`, which searches upward from the source file for `.clang-format`. The user keeps a global `~/.clang-format` (LLVM style, 4-space indent, 120 column limit) as fallback.
 
 ## Common tasks
 
@@ -76,6 +96,14 @@ return {
 ### Add a custom keymap
 Edit `lua/config/keymaps.lua` using `vim.keymap.set()`.
 
+Current custom keymaps:
+| Mode | Key | Action |
+|------|-----|--------|
+| Insert | `jk` | Exit to Normal mode |
+| Insert | `<C-]>` or `<C-j>` | Jump out of bracket/quote (moves cursor past `]}>)>"'`\`) |
+| Normal | `<leader>uw` | Toggle line wrap |
+| Normal | `<leader>uw` | Toggle line wrap |
+
 ### Add a custom option
 Edit `lua/config/options.lua` — e.g. `vim.opt.relativenumber = true`.
 
@@ -90,6 +118,13 @@ stylua lua/
 ### Check plugin status
 ```bash
 nvim --headless "+Lazy! sync" +qa
+```
+
+### Commit changes
+```bash
+git add -A && git commit -m "description of change"
+# End commit messages with:
+# Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 ## Knowledge management
