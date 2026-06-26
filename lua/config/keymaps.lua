@@ -13,7 +13,8 @@ local function jump_out()
   return ""
 end
 
-vim.keymap.set("i", "<C-]>", jump_out, { expr = true, desc = "Jump out of bracket/quote" })
+vim.keymap.set("i", "<C-]>", "<Right>", { desc = "Move cursor right (Ctrl+])" })
+vim.keymap.set("i", "<C-[>", "<Left>", { desc = "Move cursor left (Ctrl+[) -- may break <Esc> in terminals" })
 vim.keymap.set("i", "<C-j>", jump_out, { expr = true, desc = "Jump out of bracket/quote" })
 
 -- Toggle line wrap (global)

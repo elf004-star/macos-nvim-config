@@ -16,11 +16,12 @@ This is a [LazyVim](https://github.com/LazyVim/LazyVim) starter-based Neovim con
 | `lua/config/keymaps.lua` | Custom keymaps (extends LazyVim defaults) |
 | `lua/config/autocmds.lua` | Custom autocommands (extends LazyVim defaults) |
 | `lua/plugins/*.lua` | Plugin specs — each file returns a lazy.nvim plugin spec (table or list of tables); loaded automatically by lazy.nvim |
+| `lua/plugins/mason.lua` | `mason.nvim` config with `ensure_installed` list of LSP servers |
 | `lazy-lock.json` | Lock file pinning plugin commits; managed by `:Lazy` |
 | `lazyvim.json` | LazyVim install metadata (extras, version) |
 | `stylua.toml` | Lua formatting config (spaces, 2 indent, 120 column width) |
-| `.neoconf.json` | neoconf.nvim settings for Lua LSP |
-| `test.c` | Scratch file for testing C LSP/formatting |
+| `.neoconf.json` | neoconf.nvim settings for Lua LSP (enables neodev library and neoconf plugins for lua_ls) |
+| `test.c` | Scratch file for testing C LSP (`clangd`) and `clang-format` formatting |
 
 ### How plugins work
 
@@ -55,17 +56,19 @@ The `lua/plugins/example.lua` file shows common override patterns (disabled by `
 |----------|-----------|-----------|-------------|
 | Python | `basedpyright` (custom config in `lua/plugins/python.lua`) | (conform default) | `lazyvim.plugins.extras.lang.python` |
 | Rust | `rust-analyzer` | `rustfmt` (explicit in `lua/plugins/rust.lua`) | `lazyvim.plugins.extras.lang.rust` |
-| Go | `gopls` | (conform default) | `lazyvim.plugins.extras.lang.go` |
+| Go | `gopls` (staticcheck + gofumpt enabled in `lua/plugins/go.lua`) | (conform default) | `lazyvim.plugins.extras.lang.go` |
 | C/C++ | `clangd` | `clang-format` via `~/.clang-format` (docs in `lua/plugins/clangd.lua`) | `lazyvim.plugins.extras.lang.clangd` |
-| JSON | `jsonls` (with schema validation in `lua/plugins/json.lua`) | `jq` (via conform in `lua/plugins/json.lua`) | — |
+| JSON | `jsonls` (with schema validation for `package.json`, `tsconfig.json`, `lazy-lock.json` in `lua/plugins/json.lua`) | `jq` (via conform, requires `brew install jq`) | — |
 
 LSP servers listed above are auto-installed via `mason.nvim` (see `lua/plugins/mason.lua` for the `ensure_installed` list).
 
 ### Notable customizations
 
 - **basedpyright instead of pyright** — `lua/plugins/python.lua` enables `basedpyright` (more complete type checking) and disables the stock pyright via the `setup` hook.
-- **JSON schemas** — `lua/plugins/json.lua` registers `package.json`, `tsconfig.json`, and `lazy-lock.json` schemas for validation.
-- **macOS Homebrew PATH fix** — `lua/config/options.lua` prepends `/opt/homebrew/bin` to PATH so LSP tools (gopls, etc.) work when Neovim is launched from a `.app` bundle (which doesn't inherit `~/.zshrc`).
+- **JSON schemas** — `lua/plugins/json.lua` registers `package.json`, `tsconfig.json`, and `lazy-lock.json` schemas for validation. JSON formatting uses `jq` (must be installed separately via `brew install jq`).
+- **Go LSP** — `lua/plugins/go.lua` enables `staticcheck`, `unusedparams`, `shadow` analyses, and `gofumpt` formatting (requires `go install mvdan.cc/gofumpt@latest`).
+- **Default 4-space indent, 2-space for Lua** — `lua/config/options.lua` sets `tabstop=4`/`shiftwidth=4` as the global default (LazyVim's default is 2), then overrides to 2 for Lua files via a FileType autocmd.
+- **macOS Homebrew PATH fix** — `lua/config/options.lua` prepends `/opt/homebrew/bin` to PATH so LSP tools (gopls, clangd, etc.) work when Neovim is launched from a `.app` bundle (which doesn't inherit `~/.zshrc`).
 - **C/C++ formatting** — clangd delegates to `clang-format`, which searches upward from the source file for `.clang-format`. The user keeps a global `~/.clang-format` (LLVM style, 4-space indent, 120 column limit) as fallback.
 
 ## Common tasks
@@ -102,13 +105,18 @@ Current custom keymaps:
 | Insert | `jk` | Exit to Normal mode |
 | Insert | `<C-]>` or `<C-j>` | Jump out of bracket/quote (moves cursor past `]}>)>"'`\`) |
 | Normal | `<leader>uw` | Toggle line wrap |
-| Normal | `<leader>uw` | Toggle line wrap |
 
 ### Add a custom option
 Edit `lua/config/options.lua` — e.g. `vim.opt.relativenumber = true`.
 
 ### Update plugins
 Run `:Lazy sync` or `:Lazy update` inside Neovim.
+
+### Validate config loads correctly
+```bash
+nvim --headless -c "checkhealth" -c "qall"
+```
+This verifies all plugins load, LSP servers are available, and no startup errors occur.
 
 ### Format Lua files
 ```bash
@@ -126,6 +134,13 @@ git add -A && git commit -m "description of change"
 # End commit messages with:
 # Co-Authored-By: Claude <noreply@anthropic.com>
 ```
+
+### Required external tools
+Tools that aren't installed by `mason.nvim` and must exist on the system:
+- **`jq`** — JSON formatting (install via `brew install jq`)
+- **`gofumpt`** — stricter Go formatting (`go install mvdan.cc/gofumpt@latest`)
+- **`clang-format`** — C/C++ formatting (part of LLVM, installed via `brew install llvm` or Xcode CLT)
+- **LSP servers** listed in the language support table are auto-installed by `mason.nvim`
 
 ## Knowledge management
 
