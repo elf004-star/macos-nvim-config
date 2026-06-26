@@ -17,6 +17,11 @@ vim.keymap.set("i", "<C-]>", "<Right>", { desc = "Move cursor right (Ctrl+])" })
 vim.keymap.set("i", "<C-[>", "<Left>", { desc = "Move cursor left (Ctrl+[) -- may break <Esc> in terminals" })
 vim.keymap.set("i", "<C-j>", jump_out, { expr = true, desc = "Jump out of bracket/quote" })
 
+-- Ctrl+Enter in insert mode: exit insert mode and open new line below
+vim.keymap.set("i", "<C-CR>", "<Esc>o", { desc = "Exit insert and open new line below (Ctrl+Enter)" })
+-- Shift+Enter in insert mode: exit insert mode, move down, open new line above
+vim.keymap.set("i", "<S-CR>", "<Esc>jO", { desc = "Exit insert, move down, open new line above (Shift+Enter)" })
+
 -- Toggle line wrap (global)
 vim.keymap.set("n", "<leader>uw", function()
   vim.wo.wrap = not vim.wo.wrap
