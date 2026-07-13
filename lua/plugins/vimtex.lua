@@ -12,5 +12,12 @@ return {
     vim.g.vimtex_compiler_latexmk_engines = {
       _ = "-xelatex",
     }
+
+    -- 退出 nvim 时自动关闭 sioyek
+    vim.api.nvim_create_autocmd("VimLeavePre", {
+      callback = function()
+        vim.fn.system("pkill -x sioyek")
+      end,
+    })
   end,
 }
