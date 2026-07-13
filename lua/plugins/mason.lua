@@ -7,6 +7,8 @@ return {
       "clangd",
       "basedpyright",
       "json-lsp",
+      "texlab",
+      "tex-fmt",
     },
   },
 }

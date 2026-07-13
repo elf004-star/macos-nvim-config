@@ -2,11 +2,18 @@
 -- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 -- Add any additional options here
 
--- Ensure Homebrew bin directories are in PATH (fixes LSP tools like gopls
--- when Neovim is launched from a macOS .app bundle, which doesn't inherit
+-- Ensure Homebrew and ~/.local/bin directories are in PATH (fixes LSP tools and
+-- sioyek when Neovim is launched from a macOS .app bundle, which doesn't inherit
 -- the shell's PATH from ~/.zshrc)
 if not vim.env.PATH:find("/opt/homebrew/bin", 1, true) then
   vim.env.PATH = "/opt/homebrew/bin:/opt/homebrew/sbin:" .. vim.env.PATH
+end
+if not vim.env.PATH:find(".local/bin", 1, true) then
+  vim.env.PATH = vim.fn.expand("~/.local/bin") .. ":" .. vim.env.PATH
+end
+-- ~/bin (for latexmk when Neovim is launched from .app bundle)
+if not vim.env.PATH:find(vim.fn.expand("~/bin"), 1, true) then
+  vim.env.PATH = vim.fn.expand("~/bin") .. ":" .. vim.env.PATH
 end
 
 -- Default: 4-space indentation (C, Go, Python, etc.)
