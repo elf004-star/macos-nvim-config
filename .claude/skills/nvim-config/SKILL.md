@@ -80,6 +80,8 @@ Lessons are stored as individual `.md` files in the `lessons/` subdirectory (nex
 - **LazyVim 配置加载顺序**：options 在 `lazy.setup()` 期间同步加载（此时插件尚未加载，不能访问插件 API）；keymaps 和 autocmds 在 `User VeryLazy` 事件后加载。keymaps.lua 中不能依赖某插件已配置完毕，如果必须可用 `vim.api.nvim_create_autocmd("InsertEnter", ...)` 等延迟。
 - **`lazy-lock.json` 是锁文件**，不要手动编辑，用 `:Lazy sync`/`:Lazy update` 管理。
 - **插件仓库重命名需要更新所有引用**：mason.nvim 从 `williamboman/mason.nvim` 迁移到 `mason-org/mason.nvim`。插件名变更后需搜索所有 `.lua` 文件中的旧引用（实际配置和 example 文件都得改），然后执行 `:Lazy sync` 从新地址安装。LazyVim 启动时会提示这类变更。
+- **clangd 22 废弃 `--function-arg-placeholders`（无值形式会启动报错）**：LazyVim 默认 clangd cmd 里带该无值参数，clangd 22 起报 "Value specified by --function-arg-placeholders is invalid"。移除即可，占位符行为由 `init_options.usePlaceholders = true` 控制（见 `lua/plugins/clangd.lua` 的覆盖示例）。
+- **clangd 22 的 `offsetEncoding` 废弃警告无法通过配置消除**：来源是 nvim-lspconfig `configs/clangd.lua` 默认 capabilities 里的 `offsetEncoding = { 'utf-8', 'utf-16' }`。nvim 的配置合并无法从表中删除键——`vim.NIL` 会被 `vim.json.encode` 序列化成 JSON `null`（`{"offsetEncoding":null}`），clangd 看到键照样警告。该警告无害，clangd 23 或 nvim-lspconfig 更新后自动消失，别浪费时间去试 monkeypatch。
 
 ## Recording New Lessons
 

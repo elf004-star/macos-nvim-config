@@ -19,4 +19,23 @@ return {
   --   如果有项目需要单独规则，在该项目根目录放自己的 .clang-format 即可，
   --   它会覆盖家目录的全局配置。
   { import = "lazyvim.plugins.extras.lang.clangd" },
+  -- clangd 22 起 --function-arg-placeholders 废弃且不再接受无值形式（启动时报错
+  -- "Value specified by --function-arg-placeholders is invalid"）。
+  -- 占位符行为已由 init_options.usePlaceholders = true 控制，故直接从 cmd 移除该参数。
+  {
+    "neovim/nvim-lspconfig",
+    opts = function(_, opts)
+      opts.servers = opts.servers or {}
+      opts.servers.clangd = opts.servers.clangd or {}
+      opts.servers.clangd.cmd = {
+        "clangd",
+        "--background-index",
+        "--clang-tidy",
+        "--header-insertion=iwyu",
+        "--completion-style=detailed",
+        "--fallback-style=llvm",
+      }
+      return opts
+    end,
+  },
 }

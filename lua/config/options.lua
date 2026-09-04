@@ -15,6 +15,21 @@ end
 if not vim.env.PATH:find(vim.fn.expand("~/bin"), 1, true) then
   vim.env.PATH = vim.fn.expand("~/bin") .. ":" .. vim.env.PATH
 end
+-- nvm-managed node: .app bundle doesn't inherit ~/.zshrc, so jsonls / tsserver
+-- etc. fail with "env: node: No such file or directory" (exit 127)
+local nvm_node = vim.fn.expand("~/.nvm/versions/node")
+local nvm_default = vim.fn.expand("~/.nvm/alias/default")
+local node_bins = {}
+if vim.fn.filereadable(nvm_default) == 1 then
+  local version = vim.fn.readfile(nvm_default)[1]
+  node_bins = vim.fn.glob(nvm_node .. "/v" .. version .. "*/bin", false, true)
+end
+if #node_bins == 0 then
+  node_bins = vim.fn.glob(nvm_node .. "/v*/bin", false, true)
+end
+if #node_bins > 0 and not vim.env.PATH:find(node_bins[1], 1, true) then
+  vim.env.PATH = node_bins[1] .. ":" .. vim.env.PATH
+end
 
 -- Default: 4-space indentation (C, Go, Python, etc.)
 vim.opt.tabstop = 4
